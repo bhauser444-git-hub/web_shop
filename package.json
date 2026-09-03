@@ -1,0 +1,24 @@
+{
+  "name": "web_shop",
+  "version": "1.0.0",
+  "description": "Web shop with Node.js",
+  "main": "web_server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhauser444-git-hub/web_shop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhauser444-git-hub/web_shop/issues"
+  },
+  "homepage": "https://github.com/bhauser444-git-hub/web_shop#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

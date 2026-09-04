@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Unsere Produkte</title>
+</head>
+<body>
+    <h1>Produktübersicht</h1>
+    <a href="/">Zurück zur Startseite</a>
+
+    <ul>
+        <!-- Mit EJS loopen wir direkt durch die SQL-Datenbank-Ergebnisse -->
+        <% products.forEach(product => { %>
+            <li>
+                <strong><%= product.product_name %></strong> - 
+                <%= product.price %> €
+                <p><%= product.description %></p>
+            </li>
+           <% }); %>
+    </ul>
+</body>
+</html>

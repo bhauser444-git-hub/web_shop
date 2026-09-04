@@ -1,15 +1,16 @@
-
 import express from 'express';
 import mysql from "mysql2";
-//import {sagHallo} from './rechner.js'
+import 'dotenv/config'; // Lädt die .env-Datei automatisch beim Start
 
 const app = express();
-const PORT = 5000; 
+app.set('view engine', 'ejs'); 
+const PORT = process.env.PORT || 5000; // Nutzt den Port aus .env oder 5000 als Fallback
+
 const sql_connection = mysql.createConnection({
-    host: "localhost",
-    user: "bernhard",
-    password: "pochi?37!!pochi",
-    database: "web_shop"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 sql_connection.connect((err) => {
@@ -29,34 +30,20 @@ app.get('/', (req, res) => {
     `);
 });
 
-// // Eine weitere Unterseite (super einfach mit Express!)
-// app.get('/ueber-uns', (req, res) => {
-//     const gruss = sagHallo('Entwickler');
-//     res.send(gruss);
-//     //res.send('Das ist die Über-Uns-Seite.');
-// });
-
-app.get('/api/products', (req, res) => {
+// 2. Die geänderte Products-Route (holt SQL und rendert direkt HTML)
+app.get('/products', (req, res) => {
     sql_connection.execute(
         "SELECT * FROM products",
         (error, results) => {
             if (error) {
                 console.error(error);
-
-                res.status(500).json({
-                    error: "Data base error"
-                });
-
-                return;
+                return res.status(500).send("Datenbankfehler");
             }
 
-            res.json(results);
+            // Hier übergeben wir die SQL-Ergebnisse direkt an die EJS-Datei
+            res.render('products', { products: results });
         }
     );
-});
-
-app.get('/products', (req, res) => {
-    res.sendFile('products.html', { root: 'public' });
 });
 
 app.listen(PORT, () => {

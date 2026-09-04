@@ -6,10 +6,10 @@ import mysql from "mysql2";
 const app = express();
 const PORT = 5000; 
 const sql_connection = mysql.createConnection({
-    host: "localhost",
-    user: "bernhard",
-    password: "pochi?37!!pochi",
-    database: "web_shop"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 sql_connection.connect((err) => {

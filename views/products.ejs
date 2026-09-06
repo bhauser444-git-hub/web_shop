@@ -5,18 +5,23 @@
     <title>Unsere Produkte</title>
 </head>
 <body>
-    <h1>Produktübersicht</h1>
-    <a href="/">Zurück zur Startseite</a>
-
+    <header>
+        <h1>Produktübersicht</h1>
+    </header>
+    <a href="/shopping_cart">Shopping Cart</a>
+    <a href="/">Back to Home</a>
     <ul>
         <!-- Mit EJS loopen wir direkt durch die SQL-Datenbank-Ergebnisse -->
         <% products.forEach(product => { %>
             <li>
                 <strong><%= product.product_name %></strong> - 
                 <%= product.price %> €
-                <p><%= product.description %></p>
+                <button onclick="myCart.addItem('<%= product.product_id%>')">Add to Cart</button>
             </li>
            <% }); %>
+
     </ul>
+    <script src="/shopping_cart.js"></script>
+    <script src="/cart_item.js"></script>
 </body>
 </html>

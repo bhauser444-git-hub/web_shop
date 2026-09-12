@@ -42,7 +42,9 @@ class ShoppingCart {
                 }
             }
 
-            this.actualiseUI();
+            // update local storage
+            localStorage.setItem("shopping_cart", JSON.stringify(this.articles));
+
             alert(`${data.product_name} has been added to your shopping cart.`);
 
         } catch (error) {
@@ -53,6 +55,7 @@ class ShoppingCart {
     // remove an item
     removeItem(id) {
         this.articles = this.articles.filter(item => item.id !== id);
+        localStorage.setItem("shopping_cart", JSON.stringify(this.articles));
         this.actualiseUI();
     }
 
@@ -65,8 +68,6 @@ class ShoppingCart {
         const listElements = document.getElementById("cart-items-list");
         const sumElement = document.getElementById("total-price");
         
-        localStorage.setItem("shopping_cart", JSON.stringify(this.articles));
-
         if (!listElements || !sumElement) return;
 
         if (this.articles.length == 0) {
@@ -75,11 +76,11 @@ class ShoppingCart {
             return;
         }
 
-        listElements.innerHTML = "";
+        listElements.innerHTML = "<ul></ul>";
         this.articles.forEach(item => {
             const li = document.createElement("li");
             li.textContent = `${item.name} - ${item.price.toFixed(2)} € x ${item.quantity} `;
-            listElements.appendChild(li);
+            listElements.querySelector("ul").appendChild(li);
         });
 
         sumElement.textContent = `Total: ${this.getTotalPrice().toFixed(2)} €`;

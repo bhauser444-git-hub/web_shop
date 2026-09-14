@@ -3,7 +3,7 @@ class ShoppingCart {
         const savedCart = localStorage.getItem("shopping_cart");
         this.articles = savedCart ? JSON.parse(savedCart) : []; 
 
-        this.actualiseUI();
+        this.updateUI();
     }
 
     // add an item or increase quantity
@@ -21,7 +21,6 @@ class ShoppingCart {
                 existingItem.stock = currentStock;
 
                 if (existingItem.quantity < existingItem.stock) {
-                    // existingItem.quantity += 1; 
                     const updateResponse = await fetch(`/products/${id}/decrease-stock`,{
                         method: 'PATCH',
                         headers: {
@@ -70,10 +69,46 @@ class ShoppingCart {
     }
 
     // remove an item
-    removeItem(id) {
-        this.articles = this.articles.filter(item => item.id !== id);
-        localStorage.setItem("shopping_cart", JSON.stringify(this.articles));
-        this.actualiseUI();
+    async removeItem(id) {
+        try {
+            const existingItem = this.articles.find(item => item.id === id);
+            if (!existingItem) return;
+
+            // Server-Request to increase the stock
+            const updateResponse = await fetch(`/products/${id}/increase-stock`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!updateResponse.ok) {
+                throw new Error("Error while updating the stock on the server");
+            }
+
+            const result = await updateResponse.json();
+
+            if (result.success) {
+                console.log(result.message);
+
+                // decrease local value in shopping cart
+                if (existingItem.quantity > 1) {
+                    existingItem.quantity -= 1;
+                } else {
+                    // if the quantity was one, simply remove the cart item
+                    this.articles = this.articles.filter(item => item.id !== id);
+                }
+
+                // update local cache and update UI
+                localStorage.setItem("shopping_cart", JSON.stringify(this.articles));
+                this.updateUI();
+            } else {
+                alert("Server error: Could not restock product.");
+            }
+
+        } catch (error) {
+            console.error("Error removing product from cart:", error);
+        }
     }
 
     // compute total price
@@ -81,23 +116,52 @@ class ShoppingCart {
         return  this.articles.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     }
 
-    actualiseUI() {
+    updateUI() {
         const listElements = document.getElementById("cart-items-list");
         const sumElement = document.getElementById("total-price");
         
         if (!listElements || !sumElement) return;
 
         if (this.articles.length == 0) {
-            listElements.innerHTML = "<li>Your shopping cart is empty.</li>";
+            listElements.innerHTML = "<tr><td colspan='4'>Your shopping cart is empty.</td></tr>";
             sumElement.textContent = "Total: 0.00 €";
             return;
         }
 
-        listElements.innerHTML = "<ul></ul>";
+        listElements.innerHTML = "";
         this.articles.forEach(item => {
-            const li = document.createElement("li");
-            li.textContent = `${item.name} - ${item.price.toFixed(2)} € x ${item.quantity} `;
-            listElements.querySelector("ul").appendChild(li);
+            const tr = document.createElement("tr");
+
+            // row 1: name
+            const tdName = document.createElement("td");
+            tdName.textContent = item.name;
+            tr.appendChild(tdName);
+
+            // row 2: price
+            const tdPrice = document.createElement("td");
+            tdPrice.textContent = `${item.price.toFixed(2)} €`;
+            tr.appendChild(tdPrice);
+
+            // row 3: quantity
+            const tdQuantity = document.createElement("td");
+            tdQuantity.textContent = `${item.quantity}x`;
+            tr.appendChild(tdQuantity);
+
+            // row 4: cancel-Button
+            const tdAction = document.createElement("td");
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Cancel product";
+            
+            // event-listener for deleting
+            deleteButton.addEventListener("click", () => {
+                this.removeItem(item.id);
+            });
+
+            tdAction.appendChild(deleteButton);
+            tr.appendChild(tdAction);
+
+            // append line to the table
+            listElements.appendChild(tr);
         });
 
         sumElement.textContent = `Total: ${this.getTotalPrice().toFixed(2)} €`;

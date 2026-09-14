@@ -104,6 +104,25 @@ app.patch('/products/:id/decrease-stock', (req, res) => {
                 return res.status(500).send("Data bank error while updating stock");
             }
 
-            res.json({success: true, message: "Stock has been updated"});
+            res.json({success: true, message: "The Stock in the database has been updated"});
         })
 } )
+
+app.patch('/products/:id/increase-stock', (req, res) => {
+    const productId = req.params.id;
+    
+    // increases the stock in the database by one
+    sql_connection.execute(
+        "UPDATE products SET stock = stock + 1 WHERE product_id = ?",
+        [productId],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ success: false, message: "Database error while updating stock" });
+            }
+
+            // message to the frontend
+            res.json({ success: true, message: "The stock in the database has been increased" });
+        }
+    );
+});

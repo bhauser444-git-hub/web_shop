@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
         <h1>Web Shop</h1>
         <a href="/products">Go to products</a>
         <a href="/shopping_cart">Go to shopping cart</a>
+        <a href="/add_product">Add Product</a>
     `);
 });
 
@@ -68,6 +69,28 @@ app.get('/products/:id', (req, res) => {
             // first found product is returned as JSON
             res.json(results[0]);
         }  
+    );
+});
+
+app.get('/add_product', (req, res) => {
+    res.render('add_product');
+});
+
+app.use(express.urlencoded({ extended: true }));
+app.post('/products/add', (req, res) => {
+    const { product_name, price, category, stock } = req.body;
+
+    sql_connection.execute(
+        "INSERT INTO products (product_name, price, category, stock) VALUES (?, ?, ?, ?)",
+        [product_name, price, category, stock],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send("Datenbankfehler");
+            }
+
+            res.redirect('/');
+        }
     );
 });
 

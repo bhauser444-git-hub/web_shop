@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Add a new product</title>
+</head>
+<body>
+    <header>
+        <h1>Add a new product</h1>
+    </header>
+    <a href="/">Back to Home</a>
+    <form action="/products/add" method="POST">
+    
+    <label for="name">Name of the product:</label>
+    <input type="text" id="product_name" name="product_name" required>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" step="0.01" required>
+
+    <label for="category">Category:</label>
+    <select id="category" name="category" required>
+        <option value="">-- Select category --</option>
+        <option value="Garden & Outdoor">Garden & Outdoor</option>
+        <option value="Tools & Machines">Tools & Machines</option>
+        <option value="Paint, wallpaper & decoration">Lebensmittel</option>
+    </select>
+
+    <label for="stock">Stock:</label>
+    <input type="number" id="stock" name="stock" required>
+
+    <button type="submit">Add Product</button>
+</form>
+</body>
+</html>

@@ -2,25 +2,90 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unsere Produkte</title>
+    <!-- Tailwind CSS für schnelles und modernes Styling -->
+    <script src="https://tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Produktübersicht</h1>
-    </header>
-    <a href="/shopping_cart">Shopping Cart</a>
-    <a href="/">Back to Home</a>
-    <ul>
-        <!-- Mit EJS loopen wir direkt durch die SQL-Datenbank-Ergebnisse -->
-        <% products.forEach(product => { %>
-            <li>
-                <strong><%= product.product_name %></strong> - 
-                <%= product.price %> €
-                <button onclick="myCart.addItem('<%= product.product_id%>')">Add to Cart</button>
-            </li>
-           <% }); %>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
 
-    </ul>
+    <!-- Header / Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Product overview</h1>
+            <nav class="flex items-center space-x-4">
+                <a href="/" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition">Home</a>
+                <a href="/shopping_cart" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition">
+                    🛒 Warenkorb
+                </a>
+            </nav>
+        </div>
+    </header>
+
+<!-- Hauptinhalt -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Tabellen-Container für horizontales Scrollen auf Mobilgeräten -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
+            <table class="w-full border-collapse text-left text-sm text-gray-500">
+                
+                <!-- Tabellenkopf -->
+                <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-700 border-b border-gray-100">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 font-semibold w-24">Bild</th>
+                        <th scope="col" class="px-6 py-4 font-semibold">Produktname</th>
+                        <th scope="col" class="px-6 py-4 font-semibold w-32">Preis</th>
+                        <th scope="col" class="px-6 py-4 font-semibold w-40 text-right">Aktion</th>
+                    </tr>
+                </thead>
+                
+                <!-- Tabelleninhalt -->
+                <tbody class="divide-y divide-gray-100 bg-white">
+                    <% products.forEach(product => { %>
+                        <tr class="hover:bg-gray-50/75 transition-colors duration-150">
+                            
+                            <!-- Spalte 1: Bild -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="h-12 w-12 rounded-lg bg-gray-100 overflow-hidden border border-gray-100">
+                                    <img src="/images/<%= product.product_id %>.png" 
+                                         onerror="this.onerror=null; this.src='/images/placeholder.jpg';"
+                                         alt="<%= product.product_name %>" 
+                                         class="h-full w-full object-cover object-center">
+                                </div>
+                            </td>
+                            
+                            <!-- Spalte 2: Produktname -->
+                            <td class="px-6 py-4 font-medium text-gray-900">
+                                <div class="text-base font-semibold"><%= product.product_name %></div>
+                                <!-- Platzhalter für optionale Kurzbeschreibung -->
+                                <div class="text-xs text-gray-400 mt-0.5">Artikel-ID: <%= product.product_id %></div>
+                            </td>
+                            
+                            <!-- Spalte 3: Preis -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-base font-bold text-gray-950">
+                                    <%= Number(product.price || 0).toFixed(2).replace('.', ',') %> €
+                                </span>
+                            </td>
+                            
+                            <!-- Spalte 4: Aktion (Button) -->
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <button onclick="myCart.addItem('<%= product.product_id%>')" 
+                                        class="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-blue-600 shadow transition-colors duration-150">
+                                    🛒 Hinzufügen
+                                </button>
+                            </td>
+                            
+                        </tr>
+                    <% }); %>
+                </tbody>
+
+            </table>
+        </div>
+
+    </main>
+
+        <!-- Scripte -->
     <script src="/shopping_cart.js"></script>
     <script src="/cart_item.js"></script>
 </body>

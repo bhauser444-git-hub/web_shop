@@ -21,7 +21,24 @@ class ShoppingCart {
                 existingItem.stock = currentStock;
 
                 if (existingItem.quantity < existingItem.stock) {
-                    existingItem.quantity += 1; 
+                    // existingItem.quantity += 1; 
+                    const updateResponse = await fetch(`/products/${id}/decrease-stock`,{
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!updateResponse.ok) {
+                        throw new Error("Error while updating the stock on the server");
+                    }
+
+                    const result = await updateResponse.json();
+
+                    if (result.success) {
+                        existingItem.quantity += 1;
+                        console.log(result.message);
+                    }
+                    
                 } else {
                     alert(`Error: There are only ${existingItem.stock} items in 
                         stock for ${existingItem.name}.`);

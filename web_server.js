@@ -25,12 +25,7 @@ sql_connection.connect((err) => {
 app.use(express.static("public"));
 
 app.get('/', (req, res) => {
-    res.send(`
-        <h1>Web Shop</h1>
-        <a href="/products">Go to products</a>
-        <a href="/shopping_cart">Go to shopping cart</a>
-        <a href="/add_product">Add Product</a>
-    `);
+    res.render(`home`);
 });
 
 // 2. Die geänderte Products-Route (holt SQL und rendert direkt HTML)
@@ -97,3 +92,18 @@ app.post('/products/add', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
+
+app.patch('/products/:id/decrease-stock', (req, res) => {
+    const productId = req.params.id;
+    sql_connection.execute(
+        "UPDATE products SET stock = stock -1 WHERE product_id = ?",
+        [productId],
+        (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send("Data bank error while updating stock");
+            }
+
+            res.json({success: true, message: "Stock has been updated"});
+        })
+} )
